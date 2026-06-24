@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Wakewatch — a lightweight live AIS vessel tracker." />
+    <title>Wakewatch — Live AIS</title>
+    <link rel="preconnect" href="https://unpkg.com" />
+    <link rel="preconnect" href="https://tile.openstreetmap.org" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Wakewatch home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32"><path d="M4 16h24M7 21c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2 2-2 4-2M10 15l2-7h8l2 7M15 8V4h4"/></svg>
+        </span>
+        <span><strong>WAKEWATCH</strong><small>LIVE AIS</small></span>
+      </a>
+
+      <div class="topbar-actions">
+        <div class="connection-pill is-demo" id="connectionPill">
+          <span class="pulse-dot"></span>
+          <span id="connectionText">Demo feed</span>
+        </div>
+        <button class="button button-primary" id="connectButton" type="button" data-mobile-label="LIVE">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m0 0L7 10m5-5 5 5"/></svg>
+          Connect live
+        </button>
+      </div>
+    </header>
+
+    <main class="app-shell">
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-head">
+          <div>
+            <p class="eyebrow">TRAFFIC OVERVIEW</p>
+            <div class="traffic-total"><strong id="vesselCount">0</strong><span>vessels<br />in view</span></div>
+          </div>
+          <button class="icon-button mobile-close" id="closeSidebar" type="button" aria-label="Close vessel list">×</button>
+        </div>
+
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+          <input id="searchInput" type="search" placeholder="Search vessel or MMSI" autocomplete="off" />
+          <kbd>⌘K</kbd>
+        </div>
+
+        <div class="filter-row" role="group" aria-label="Vessel status filter">
+          <button class="filter-chip is-active" data-filter="all" type="button">All <span id="allCount">0</span></button>
+          <button class="filter-chip" data-filter="underway" type="button"><i class="dot underway"></i>Underway</button>
+          <button class="filter-chip" data-filter="stopped" type="button"><i class="dot stopped"></i>Stopped</button>
+        </div>
+
+        <div class="list-heading"><span>VESSEL</span><span>LAST REPORT</span></div>
+        <div class="vessel-list" id="vesselList" aria-live="polite"></div>
+
+        <div class="sidebar-foot">
+          <span><i class="pulse-dot small"></i> Position reports stream as received</span>
+          <button class="text-button" id="clearButton" type="button">Clear tracks</button>
+        </div>
+      </aside>
+
+      <section class="map-panel" aria-label="Live vessel map">
+        <div id="map"></div>
+
+        <div class="map-tools left-tools">
+          <button class="map-button menu-button" id="openSidebar" type="button" aria-label="Open vessel list">
+            <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+          </button>
+        </div>
+
+        <div class="map-tools right-tools">
+          <button class="map-button" id="locateButton" type="button" aria-label="Use my location" title="Use my location">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg>
+          </button>
+          <button class="map-button" id="fitButton" type="button" aria-label="Fit all vessels" title="Fit all vessels">
+            <svg viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M8 21H3v-5m13 5h5v-5"/></svg>
+          </button>
+        </div>
+
+        <div class="legend-card">
+          <span><i class="legend-vessel moving"></i>Underway</span>
+          <span><i class="legend-vessel idle"></i>Stopped</span>
+          <span><i class="legend-vessel stale"></i>Stale</span>
+        </div>
+
+        <div class="selection-card is-hidden" id="selectionCard"></div>
+      </section>
+    </main>
+
+    <div class="modal-backdrop is-hidden" id="connectModal" role="dialog" aria-modal="true" aria-labelledby="connectTitle">
+      <form class="modal-card" id="connectForm">
+        <button class="modal-close" id="closeModal" type="button" aria-label="Close">×</button>
+        <p class="eyebrow">LIVE CONNECTION</p>
+        <h1 id="connectTitle">Connect an AIS feed</h1>
+        <p class="modal-copy">Wakewatch connects to AISStream from this browser. Your key is held in memory for this session only.</p>
+
+        <label for="apiKey">AISStream API key</label>
+        <div class="key-input-wrap">
+          <input id="apiKey" name="apiKey" type="password" placeholder="Paste your API key" required autocomplete="off" />
+          <button id="toggleKey" type="button" aria-label="Show API key">Show</button>
+        </div>
+
+        <fieldset>
+          <legend>Coverage area</legend>
+          <div class="area-options">
+            <label><input type="radio" name="area" value="view" checked /><span><strong>Current map</strong><small>Recommended · lower traffic</small></span></label>
+            <label><input type="radio" name="area" value="world" /><span><strong>Worldwide</strong><small>High message volume</small></span></label>
+          </div>
+        </fieldset>
+
+        <button class="button button-primary button-full" type="submit">Start live tracking</button>
+        <p class="fine-print">Need a key? Create one at <a href="https://aisstream.io/" target="_blank" rel="noreferrer">aisstream.io</a>. Provider coverage and limits apply.</p>
+      </form>
+    </div>
+
+    <div class="toast-region" id="toastRegion" aria-live="polite"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="app.js"></script>
+  </body>
+</html>
