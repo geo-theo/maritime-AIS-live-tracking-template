@@ -45,6 +45,7 @@ svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round
 .connection-pill { height: 36px; display: flex; align-items: center; gap: 8px; padding: 0 13px; background: #edf2ec; border: 1px solid #d8e0d7; border-radius: 999px; color: #526862; font: 500 11px/1 var(--mono); text-transform: uppercase; letter-spacing: 0.07em; }
 .pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 0 0 rgba(230,117,59,.3); animation: pulse 2s infinite; }
 .connection-pill.is-live .pulse-dot, .pulse-dot.small { background: #22a66f; }
+.connection-pill.is-connecting .pulse-dot, .connection-pill.is-reconnecting .pulse-dot { background: var(--yellow); }
 .connection-pill.is-error .pulse-dot { background: #c24f4f; animation: none; }
 @keyframes pulse { 70% { box-shadow: 0 0 0 7px rgba(230,117,59,0); } 100% { box-shadow: 0 0 0 0 rgba(230,117,59,0); } }
 
@@ -119,6 +120,8 @@ svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round
 .left-tools { left: 17px; top: 17px; }.right-tools { right: 17px; top: 101px; flex-direction: column; }
 .map-button { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 7px; background: rgba(251,251,247,.96); box-shadow: var(--shadow); cursor: pointer; }
 .map-button:hover { background: white; color: var(--teal); }
+.map-button.is-active { color: white; background: var(--teal); border-color: var(--teal); }
+.map-button.is-active:hover { color: white; background: var(--teal-dark); }
 .map-button svg { width: 18px; }
 .menu-button { display: none; }
 .legend-card { position: absolute; z-index: 600; left: 17px; bottom: 25px; display: flex; align-items: center; gap: 15px; padding: 10px 13px; border: 1px solid var(--line); border-radius: 7px; background: rgba(251,251,247,.92); box-shadow: var(--shadow); backdrop-filter: blur(8px); color: #60716d; font: 400 9px var(--mono); }
@@ -140,6 +143,10 @@ svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round
 .stat small { display: block; color: #83918d; font: 400 8px var(--mono); letter-spacing: .07em; }
 .stat strong { display: block; margin-top: 5px; font: 500 13px var(--mono); }
 .position-line { padding: 10px 16px; display: flex; justify-content: space-between; background: #eff2ed; color: #63736f; font: 400 9px var(--mono); }
+.voyage-line { display: grid; grid-template-columns: 1.35fr .8fr 1fr; gap: 10px; padding: 11px 16px; border-top: 1px solid var(--line); }
+.voyage-line span { min-width: 0; }
+.voyage-line small { display: block; color: #83918d; font: 400 7px var(--mono); letter-spacing: .07em; }
+.voyage-line strong { display: block; overflow: hidden; margin-top: 4px; font: 500 9px var(--mono); text-overflow: ellipsis; white-space: nowrap; }
 
 .modal-backdrop { position: fixed; z-index: 2000; inset: 0; display: grid; place-items: center; padding: 20px; background: rgba(12,34,32,.55); backdrop-filter: blur(4px); transition: opacity .18s; }
 .modal-backdrop.is-hidden { opacity: 0; pointer-events: none; }
